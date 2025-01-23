@@ -11,7 +11,7 @@ async function init() {
     let isLoading = true;
 
     const res = await fetch("https://words.dev-apis.com/word-of-the-day");
-    const { word: wordRes } = await res.json();
+    const {word: wordRes} = await res.json();
     const word = wordRes.toUpperCase();
     const wordParts = word.split("");
     isLoading = false;
@@ -38,9 +38,9 @@ async function init() {
         setLoading(isLoading);
         const res = await fetch("https://words.dev-apis.com/validate-word", {
             method: "POST",
-            body: JSON.stringify({ word: currentGuess }),
+            body: JSON.stringify({word: currentGuess}),
         });
-        const { validWord } = await res.json();
+        const {validWord} = await res.json();
         isLoading = false;
         setLoading(isLoading);
 
@@ -109,7 +109,6 @@ async function init() {
 
     document.addEventListener("keydown", function handleKeyPress(event) {
         if (done || isLoading) {
-            // do nothing;
             return;
         }
 
@@ -121,30 +120,45 @@ async function init() {
             backspace();
         } else if (isLetter(action)) {
             addLetter(action.toUpperCase());
-        } else {
-            // do nothing
         }
     });
-}
 
-function isLetter(letter) {
-    return /^[a-zA-Z]$/.test(letter);
-}
-
-function setLoading(isLoading) {
-    loadingDiv.classList.toggle("hidden", !isLoading);
-}
-
-function makeMap(array) {
-    const obj = {};
-    for (let i = 0; i < array.length; i++) {
-        if (obj[array[i]]) {
-            obj[array[i]]++;
-        } else {
-            obj[array[i]] = 1;
+    document.addEventListener("touchstart", function handleTouchStart(event) {
+        if (done || isLoading) {
+            return;
         }
+
+        const touch = event.touches[0];
+        const action = touch.target.dataset.action;
+
+        if (action === "Enter") {
+            commit();
+        } else if (action === "Backspace") {
+            backspace();
+        } else if (isLetter(action)) {
+            addLetter(action.toUpperCase());
+        }
+    });
+
+    function isLetter(letter) {
+        return /^[a-zA-Z]$/.test(letter);
     }
-    return obj;
+
+    function setLoading(isLoading) {
+        loadingDiv.classList.toggle("hidden", !isLoading);
+    }
+
+    function makeMap(array) {
+        const obj = {};
+        for (let i = 0; i < array.length; i++) {
+            if (obj[array[i]]) {
+                obj[array[i]]++;
+            } else {
+                obj[array[i]] = 1;
+            }
+        }
+        return obj;
+    }
 }
 
 init();
